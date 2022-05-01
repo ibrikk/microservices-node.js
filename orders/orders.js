@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 const app = express();
+require("dotenv").config();
 
 app.use(bodyParser.json());
 
@@ -12,7 +13,7 @@ const Order = mongoose.model("Order");
 const start = async () => {
   mongoose
     .connect(
-      `mongodb+srv://ikhal:Qwerty12@cluster0.isnui.mongodb.net/Cluster0?retryWrites=true&w=majority`
+      `mongodb+srv://ikhal:${process.env.PASSWORD}@cluster0.isnui.mongodb.net/Cluster0?retryWrites=true&w=majority`
     )
     .then(() => console.log("Database is connected!"))
     .catch((err) => {
@@ -74,7 +75,6 @@ app.get("/order/:id", (req, res) => {
           axios
             .get("http://localhost:4545/book/" + order.BookID)
             .then((response) => {
-              console.log("here", response.data.title);
               orderObject.bookTitle = response.data.title;
               res.json(orderObject);
             });

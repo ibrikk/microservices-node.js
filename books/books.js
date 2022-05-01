@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+require("dotenv").config();
 
 app.use(bodyParser.json());
 
@@ -12,7 +13,7 @@ const Book = mongoose.model("Book");
 const start = async () => {
   mongoose
     .connect(
-      `mongodb+srv://ikhal:Qwerty12@cluster0.vikwg.mongodb.net/Cluster0?retryWrites=true&w=majority`
+      `mongodb+srv://ikhal:${process.env.PASSWORD}@cluster0.vikwg.mongodb.net/Cluster0?retryWrites=true&w=majority`
     )
     .then(() => console.log("Database is connected!"))
     .catch((err) => console.error(err));

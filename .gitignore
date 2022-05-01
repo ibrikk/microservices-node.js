@@ -1,3 +1,6 @@
 /books/node_modules/
 /customers/node_modules/
 /orders/node_modules/
+/orders/.env
+/customers/.env
+/books/.env
