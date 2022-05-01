@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const axios = require("axios");
 const app = express();
 
 app.use(bodyParser.json());
@@ -30,8 +31,8 @@ app.get("/", (req, res) => {
 
 app.post("/order", (req, res) => {
   const newOrder = {
-    customerId: req.body.CustomerID,
-    bookId: req.body.BookID,
+    CustomerID: mongoose.Types.ObjectId(req.body.CustomerID),
+    BookID: mongoose.Types.ObjectId(req.body.BookID),
     initialDate: req.body.initialDate,
     deliveryDate: req.body.deliveryDate,
   };
@@ -45,7 +46,43 @@ app.post("/order", (req, res) => {
         throw err;
       }
     });
-  res.send("Your order was successfully saved");
+  res.send("Your order was successfully saved!");
+});
+
+app.get("/orders", (req, res) => {
+  Order.find()
+    .then((orders) => {
+      res.json(orders);
+    })
+    .catch((err) => {
+      if (err) {
+        throw err;
+      }
+    });
+});
+
+app.get("/order/:id", (req, res) => {
+  Order.findById(req.params.id).then((order) => {
+    if (order) {
+      axios
+        .get("http://localhost:5555/customer/" + order.CustomerID)
+        .then((response) => {
+          let orderObject = {
+            customerName: response.data.name,
+            bookTitle: "",
+          };
+          axios
+            .get("http://localhost:4545/book/" + order.BookID)
+            .then((response) => {
+              console.log("here", response.data.title);
+              orderObject.bookTitle = response.data.title;
+              res.json(orderObject);
+            });
+        });
+    } else {
+      res.send("Invalid Order");
+    }
+  });
 });
 
 app.listen(7777, () => {
